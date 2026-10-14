@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@react-three/drei": "10.7.9",
@@ -23,6 +24,7 @@
     "@types/three": "0.186.0",
     "@vitejs/plugin-react": "6.1.1",
     "typescript": "5.9.3",
-    "vite": "8.3.1"
+    "vite": "8.3.1",
+    "wrangler": "4.151.0"
   }
 }
