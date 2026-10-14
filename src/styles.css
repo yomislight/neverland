@@ -1,0 +1,182 @@
+:root {
+  --night: #0b1433;
+  --ink: #2f2a3a;
+  --paper: #f6eddc;
+  --gold: #f3d08a;
+  --gold-deep: #d9a85a;
+  --mist: rgba(246, 237, 220, 0.82);
+  --glass: rgba(16, 22, 52, 0.55);
+  --serif: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+  --latin: 'Cormorant Garamond', Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; height: 100%; overflow: hidden; background: var(--night); }
+body {
+  font-family: var(--serif);
+  color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+canvas { display: block; touch-action: none; }
+
+/* ---------- 按钮 ---------- */
+.btn {
+  font: 600 15px/1 var(--serif);
+  letter-spacing: 0.12em;
+  color: var(--paper);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(246, 237, 220, 0.35);
+  border-radius: 999px;
+  padding: 14px 26px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.3s, opacity 0.3s;
+}
+.btn:hover { background: rgba(255, 255, 255, 0.14); transform: translateY(-1px); }
+.btn.primary { background: var(--gold); color: #3a2a18; border-color: transparent; box-shadow: 0 0 30px rgba(243, 208, 138, 0.35); }
+.btn.primary:hover { background: #f8dca2; }
+.btn.ghost { background: transparent; }
+.btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+/* ---------- 开场 ---------- */
+.intro {
+  position: fixed; inset: 0; z-index: 30;
+  display: grid; place-items: center; text-align: center; padding: 24px 16px;
+  background: radial-gradient(ellipse at 50% 40%, rgba(30, 42, 92, 0.75), rgba(5, 8, 22, 0.97) 70%);
+  backdrop-filter: blur(6px);
+  transition: opacity 1.4s ease;
+}
+.intro.leaving { opacity: 0; pointer-events: none; }
+.intro-inner { max-width: 560px; animation: rise 1.6s ease both; }
+.eyebrow { font: italic 500 18px var(--latin); letter-spacing: 0.2em; color: var(--gold); opacity: 0.8; margin: 0 0 8px; }
+.intro h1 {
+  font: 500 clamp(40px, 9.5vw, 96px)/1 var(--latin);
+  letter-spacing: 0.14em; margin: 0 0 14px; padding-left: 0.14em;
+  color: #fff6e2; text-shadow: 0 0 40px rgba(243, 208, 138, 0.45);
+}
+.subtitle { font-size: 17px; letter-spacing: 0.5em; padding-left: 0.5em; margin: 0 0 48px; opacity: 0.85; }
+.question { font-size: clamp(18px, 4.6vw, 22px); line-height: 1.8; margin: 0 0 40px; color: #fff; }
+.small { font-size: 12px; letter-spacing: 0.2em; opacity: 0.55; margin-top: 18px; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* ---------- 旁白字幕 ---------- */
+.caption-wrap {
+  position: fixed; left: 0; right: 0; bottom: max(9vh, 64px); z-index: 10;
+  display: flex; justify-content: center; padding: 0 16px; pointer-events: none;
+}
+.caption {
+  margin: 0; max-width: 680px; text-align: center;
+  font-size: clamp(17px, 4.4vw, 22px); line-height: 1.75; letter-spacing: 0.06em;
+  color: #fffaf0;
+  text-shadow: 0 2px 18px rgba(5, 8, 25, 0.85), 0 0 2px rgba(5, 8, 25, 0.9);
+  animation: caption 0.9s ease both;
+}
+@keyframes caption { from { opacity: 0; filter: blur(6px); transform: translateY(6px); } to { opacity: 1; filter: none; transform: none; } }
+
+.hint {
+  position: fixed; top: 20px; left: 16px; right: 16px; margin: 0 auto; z-index: 10;
+  font-size: 13px; letter-spacing: 0.14em; text-align: center;
+  width: max-content; max-width: calc(100% - 32px);
+  padding: 9px 16px; border-radius: 999px;
+  background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px); pointer-events: none;
+  animation: rise 0.8s ease both;
+}
+
+/* ---------- 童年背包 ---------- */
+.backpack {
+  position: fixed; top: 16px; right: 16px; z-index: 10;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px 8px 14px; border-radius: 999px;
+  background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);
+}
+.backpack-label { font-size: 12px; letter-spacing: 0.16em; opacity: 0.7; margin-right: 2px; }
+.slot {
+  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+  border: 1px dashed rgba(246, 237, 220, 0.3); color: rgba(246, 237, 220, 0.25);
+  transition: all 0.6s ease;
+}
+.slot svg { width: 18px; height: 18px; }
+.slot.filled { border: 1px solid var(--gold); color: var(--gold); background: rgba(243, 208, 138, 0.12); box-shadow: 0 0 16px rgba(243, 208, 138, 0.35); }
+
+/* ---------- 卡片 ---------- */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 16px;
+  background: rgba(5, 8, 25, 0.35); animation: fadein 0.6s ease both;
+}
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+.card {
+  width: min(460px, 100%); padding: 30px 26px 26px; border-radius: 20px; text-align: center;
+  background: linear-gradient(180deg, rgba(250, 243, 230, 0.97), rgba(240, 228, 208, 0.97));
+  color: var(--ink);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+  animation: rise 0.7s ease both;
+  user-select: text;
+}
+.card-icon {
+  width: 54px; height: 54px; margin: -2px auto 12px; border-radius: 50%; display: grid; place-items: center;
+  color: var(--gold-deep); background: rgba(217, 168, 90, 0.14);
+}
+.card-icon svg { width: 28px; height: 28px; }
+.card-kicker { font-size: 13px; letter-spacing: 0.2em; color: #9a7b5a; margin: 0 0 10px; }
+.card-found { font-size: 14px; line-height: 1.8; color: #6c5f55; margin: 0 0 18px; }
+.card h2 { font-size: clamp(19px, 5vw, 22px); font-weight: 600; line-height: 1.6; margin: 0 0 18px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 18px; }
+.chip {
+  font: 400 14px/1 var(--serif); color: var(--ink); cursor: pointer;
+  padding: 10px 14px; border-radius: 999px; border: 1px solid rgba(47, 42, 58, 0.18); background: rgba(255, 255, 255, 0.6);
+  transition: all 0.25s;
+}
+.chip:hover { border-color: var(--gold-deep); }
+.chip.on { background: #2f2a3a; color: var(--paper); border-color: #2f2a3a; }
+.field {
+  width: 100%; margin: 0 0 18px; padding: 12px 14px; border-radius: 12px;
+  font: 400 16px/1.7 var(--serif); color: var(--ink);
+  border: 1px solid rgba(47, 42, 58, 0.2); background: rgba(255, 255, 255, 0.75); outline: none; resize: none;
+}
+.field:focus { border-color: var(--gold-deep); box-shadow: 0 0 0 3px rgba(217, 168, 90, 0.2); }
+.card .btn { color: #3a2a18; }
+.card .btn:not(.primary) { color: var(--ink); border-color: rgba(47, 42, 58, 0.25); }
+
+.letter-wrap {
+  position: fixed; inset: auto 0 0 0; z-index: 20; display: flex; justify-content: center;
+  padding: 16px 16px max(24px, env(safe-area-inset-bottom));
+}
+.card.letter { text-align: left; }
+.card.letter h2 { margin-bottom: 12px; }
+.letter-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.count { font-size: 12px; color: #9a8a7a; letter-spacing: 0.1em; }
+
+/* ---------- 结尾 ---------- */
+.ending {
+  position: fixed; inset: 0; z-index: 20; overflow-y: auto;
+  display: grid; place-items: center; padding: 24px 16px;
+  background: radial-gradient(ellipse at center, rgba(40, 30, 50, 0.35), rgba(20, 14, 30, 0.75));
+  animation: fadein 1.6s ease both;
+}
+.ending-inner { text-align: center; max-width: 440px; width: 100%; }
+.postcard {
+  width: 100%; max-height: 62vh; object-fit: contain; border-radius: 6px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5); animation: rise 1.4s ease both; user-select: auto;
+}
+.ending-line { font-size: 16px; line-height: 1.8; letter-spacing: 0.08em; margin: 20px 0 18px; }
+.row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ---------- 其它 ---------- */
+.mute {
+  position: fixed; right: 16px; bottom: 16px; z-index: 25;
+  width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+  color: var(--paper); background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px);
+}
+.mute svg { width: 20px; height: 20px; }
+.fade { position: fixed; inset: 0; z-index: 28; background: #fff8ec; opacity: 0; pointer-events: none; transition: opacity 1.3s ease; }
+.fade.on { opacity: 1; }
+
+@media (max-width: 520px) {
+  .backpack-label { display: none; }
+  .hint { top: 70px; font-size: 12px; }
+  .card { padding: 24px 18px 20px; }
+}
