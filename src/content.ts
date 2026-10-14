@@ -77,7 +77,7 @@ export const HINTS: Partial<Record<string, string>> = {
 }
 
 export const TOUCH_HINTS: Partial<Record<string, string>> = {
-  bedroom: '点一点房间里的东西',
+  bedroom: '左右滑动看看房间 · 点一点里面的东西',
   flight: '按住屏幕拖动控制方向 · 穿过星环',
   island: '点击地面走过去',
 }

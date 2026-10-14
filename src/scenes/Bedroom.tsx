@@ -8,6 +8,7 @@ import { mat, PaperPlane, FireflyJar, TeddyBear } from '../world/models'
 import { GlowStar } from '../world/fx'
 
 const W = 3.5 // 房间半宽
+const UP = new THREE.Vector3(0, 1, 0)
 const H = 3.2
 const WIN = { x0: 0.4, x1: 2.0, y0: 1.1, y1: 2.6 }
 
@@ -128,6 +129,31 @@ export default function Bedroom({ morning }: { morning: boolean }) {
   const minute = useRef<THREE.Group>(null!)
   const second = useRef<THREE.Group>(null!)
   const opening = useRef(0)
+  const yaw = useRef(0)
+  const yawTarget = useRef(0)
+  const size = useThree((s) => s.size)
+
+  // 拖动 / 滑动屏幕环顾房间（内容跟着手指走）
+  useEffect(() => {
+    let lastX: number | null = null
+    const down = (e: PointerEvent) => (lastX = e.clientX)
+    const move = (e: PointerEvent) => {
+      if (lastX === null) return
+      yawTarget.current = THREE.MathUtils.clamp(yawTarget.current - ((e.clientX - lastX) / window.innerWidth) * 1.6, -0.6, 0.6)
+      lastX = e.clientX
+    }
+    const up = () => (lastX = null)
+    window.addEventListener('pointerdown', down)
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', up)
+    window.addEventListener('pointercancel', up)
+    return () => {
+      window.removeEventListener('pointerdown', down)
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', up)
+      window.removeEventListener('pointercancel', up)
+    }
+  }, [])
   const [starClicked, setStarClicked] = useState(false)
   const drawing = useDrawingTexture()
 
@@ -213,9 +239,14 @@ export default function Bedroom({ morning }: { morning: boolean }) {
       camera.position.lerp(new THREE.Vector3(1.15, 1.85, -2.6), 1 - Math.exp(-dt * 0.9))
       camera.lookAt(1.3, 2.4, -12)
     } else {
-      const base = new THREE.Vector3(world.pointer.x * 0.25, 1.62 + world.pointer.y * 0.12, 3.0)
+      // 竖屏时视野窄：相机退后一点、偏右一点，并允许左右滑动环顾房间
+      const portrait = size.width < size.height
+      const px = portrait ? 0 : world.pointer.x * 0.25
+      const base = new THREE.Vector3(px + (portrait ? 0.4 : 0), 1.62 + (portrait ? 0 : world.pointer.y * 0.12), portrait ? 3.3 : 3.0)
       camera.position.lerp(base, k)
-      camera.lookAt(0.35, 1.45, -3.5)
+      yaw.current += (yawTarget.current + (portrait ? 0.12 : 0) - yaw.current) * (1 - Math.exp(-dt * 6))
+      const dir = new THREE.Vector3(0.35 - base.x, (portrait ? 1.25 : 1.45) - base.y, -3.5 - base.z).applyAxisAngle(UP, -yaw.current)
+      camera.lookAt(camera.position.clone().add(dir))
     }
   })
 
